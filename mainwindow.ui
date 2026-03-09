@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>951</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="font">
+   <font>
+    <family>Noto Sans</family>
+    <italic>false</italic>
+    <bold>false</bold>
+    <underline>false</underline>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>Sprite Opera</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="mouseTracking">
+    <bool>false</bool>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="3">
+     <widget class="QToolButton" name="toolButton">
+      <property name="text">
+       <string>Repack</string>
+      </property>
+      <property name="icon">
+       <iconset theme="QIcon::ThemeIcon::SystemReboot"/>
+      </property>
+      <property name="toolButtonStyle">
+       <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="4">
+     <widget class="QToolButton" name="rasterizeSpritesButton">
+      <property name="whatsThis">
+       <string>Rasterize all sprites to files</string>
+      </property>
+      <property name="text">
+       <string>Save Sprites</string>
+      </property>
+      <property name="icon">
+       <iconset theme="QIcon::ThemeIcon::EditSelectAll"/>
+      </property>
+      <property name="toolButtonStyle">
+       <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QToolButton" name="rasterizeButton">
+      <property name="statusTip">
+       <string>Save Spritesheet to File</string>
+      </property>
+      <property name="whatsThis">
+       <string>Save Spritesheet to File</string>
+      </property>
+      <property name="text">
+       <string>Save Spritesheet</string>
+      </property>
+      <property name="icon">
+       <iconset theme="QIcon::ThemeIcon::DocumentSave"/>
+      </property>
+      <property name="toolButtonStyle">
+       <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1" colspan="6">
+     <widget class="GLWidget" name="openGLWidget"/>
+    </item>
+    <item row="0" column="0">
+     <widget class="QComboBox" name="modeComboBox">
+      <property name="font">
+       <font>
+        <family>Noto Sans</family>
+        <italic>false</italic>
+        <bold>false</bold>
+        <underline>false</underline>
+       </font>
+      </property>
+      <property name="editable">
+       <bool>false</bool>
+      </property>
+      <property name="placeholderText">
+       <string>View Mode</string>
+      </property>
+      <property name="frame">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QToolButton" name="homeButton">
+      <property name="statusTip">
+       <string>Reset View</string>
+      </property>
+      <property name="whatsThis">
+       <string>Reset View</string>
+      </property>
+      <property name="text">
+       <string>Reset Zoom</string>
+      </property>
+      <property name="icon">
+       <iconset theme="QIcon::ThemeIcon::ZoomFitBest"/>
+      </property>
+      <property name="toolButtonStyle">
+       <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QTreeView" name="treeView">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="contextMenuPolicy">
+       <enum>Qt::ContextMenuPolicy::CustomContextMenu</enum>
+      </property>
+      <property name="animated">
+       <bool>false</bool>
+      </property>
+      <property name="wordWrap">
+       <bool>false</bool>
+      </property>
+      <attribute name="headerHighlightSections">
+       <bool>true</bool>
+      </attribute>
+     </widget>
+    </item>
+    <item row="0" column="5">
+     <widget class="QToolButton" name="trimSpritesButton">
+      <property name="text">
+       <string>Trim Sprites</string>
+      </property>
+      <property name="icon">
+       <iconset theme="QIcon::ThemeIcon::EditCut"/>
+      </property>
+      <property name="toolButtonStyle">
+       <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>951</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuOpen">
+    <property name="title">
+     <string>Open</string>
+    </property>
+    <addaction name="actionMenubarOpenImageFolder"/>
+    <addaction name="actionMenubarOpenSpritesheet"/>
+   </widget>
+   <addaction name="menuOpen"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionMenubarOpenImageFolder">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="QIcon::ThemeIcon::FolderOpen"/>
+   </property>
+   <property name="text">
+    <string>Folder of images</string>
+   </property>
+  </action>
+  <action name="actionMenubarOpenSpritesheet">
+   <property name="icon">
+    <iconset theme="QIcon::ThemeIcon::ImageLoading"/>
+   </property>
+   <property name="text">
+    <string>Spritesheet</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>GLWidget</class>
+   <extends>QOpenGLWidget</extends>
+   <header location="global">glwidget.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

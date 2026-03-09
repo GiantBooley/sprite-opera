@@ -1,0 +1,37 @@
+#ifndef IIMAGEDATA_HPP
+#define IIMAGEDATA_HPP
+
+#include <cstddef>
+#include <memory>
+#include <string>
+
+enum ImageType {
+    FLOAT32,
+    UINT8
+};
+class IImageData { // image data interface
+public:
+    virtual ~IImageData() = default;
+
+    virtual void convertColorChannels(size_t newColorChannels) = 0;
+
+    virtual void loadTexture() = 0;
+    virtual void bindTexture() const = 0;
+
+    //virtual void saveToFile(std::string fileName) const = 0;
+
+    virtual size_t getWidth() const = 0;
+    virtual size_t getHeight() const = 0;
+    virtual size_t getChannels() const = 0;
+    virtual void setToZero(size_t x, size_t y) = 0;
+    virtual void setToWhite(size_t x, size_t y) = 0;
+    virtual double sampleNormalAlpha(size_t x, size_t y) const = 0;
+    virtual bool checkBounds(size_t x, size_t y) const = 0;
+    virtual bool checkBounds(int x, int y) const = 0;
+
+    virtual std::string getFilePath() const = 0;
+
+    virtual std::shared_ptr<IImageData> convertTo(ImageType type) const = 0;
+};
+
+#endif // IIMAGEDATA_HPP
