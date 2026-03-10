@@ -13,46 +13,6 @@ class UnityAsset {
 public:
     std::string assetPath;
 };
-class PhysicsMaterial2D : public UnityAsset {
-public:
-    float friction;
-    float bounciness;
-};
-enum class SoundMaterial {
-    rock,
-    wood,
-    metal,
-    plastic,
-    furniture,
-    snow,
-    cardboard,
-    none,
-    snake,
-    solidmetal
-};
-class GroundCol {
-public:
-    float r, g, b;
-
-    bool isCustom;
-    // customgroundcol
-    std::string customMaterial;
-    bool isSolid;
-    // groundcol
-    SoundMaterial material;
-
-    GroundCol(float r2, float g2, float b2, std::string customMaterial2, bool isSolid2);
-    GroundCol(float r2, float g2, float b2, SoundMaterial material2);
-    GroundCol();
-};
-class Collider {
-public:
-    std::vector<std::vector<Vec2f>> paths;
-    GroundCol groundCol;
-    Vec2f offset;
-    PhysicsMaterial2D physicsMaterial;
-    Collider();
-};
 class ColorGrade {
 public:
     float multiplyR, multiplyG, multiplyB, exponentR, exponentG, exponentB, saturation;
@@ -65,8 +25,8 @@ public:
 class Sprite {
 public:
     std::shared_ptr<IImageData> image;
+    std::shared_ptr<IImageData> normalMap;
     std::shared_ptr<AbstractBinaryMask> region;
-    Collider physicsShape;
     ColorGrade colorGrade;
 
     Sprite(std::shared_ptr<IImageData> img);

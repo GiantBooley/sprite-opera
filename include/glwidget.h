@@ -1,7 +1,7 @@
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
-#include "sprite.h"
+#include "sprite.hpp"
 #include "math.h"
 #include <QWidget>
 #include <QOpenGLWidget>

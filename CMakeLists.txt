@@ -12,42 +12,27 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Find Qt6 components
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets OpenGLWidgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets OpenGLWidgets)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
-find_package(OpenCV REQUIRED COMPONENTS core imgproc highgui)
+
+set(CMAKE_CURRENT_SOURCE_DIR /home/giantbooley/code/sprite-opera/)
 
 set(PROJECT_SOURCES
     main.cpp
-    sprite.cpp
-    ImageData.tpp
-    include/ImageData.hpp
+    include/ImageData.hpp ImageData.tpp
     include/IImageData.hpp
-    include/sprite.h
-    glwidget.cpp
-    include/glwidget.h
+    include/sprite.hpp sprite.cpp
+    include/glwidget.h glwidget.cpp
     mainwindow.cpp
-    mainwindow.h
+    include/mainwindow.h
     mainwindow.ui
-    include/math.hpp
-    math.cpp
+    include/math.hpp math.cpp
     include/stringcreator.hpp stringcreator.cpp
     include/binarymask.hpp binarymask.cpp
-    spriteopera.h spriteopera.cpp
+    include/normalmapgenerator.hpp normalmapgenerator.cpp
+    include/spriteopera.h spriteopera.cpp
 )
 include_directories(include)
-include_directories(${OpenCV_INCLUDE_DIRS})
 
-if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    find_package(Qt6 REQUIRED COMPONENTS Widgets)
-
-    qt_add_executable(sprite-opera
-        MANUAL_FINALIZATION
-        ${PROJECT_SOURCES}
-    )
-else()
-    add_executable(sprite-opera
-        ${PROJECT_SOURCES}
-    )
-endif()
+qt_add_executable(sprite-opera MANUAL_FINALIZATION ${PROJECT_SOURCES})
 
 # Link all required Qt6 modules
 target_link_libraries(sprite-opera PRIVATE
@@ -56,7 +41,6 @@ target_link_libraries(sprite-opera PRIVATE
 )
 target_link_libraries(sprite-opera PRIVATE Qt6::Widgets)
 target_link_libraries(sprite-opera PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
-target_link_libraries(sprite-opera ${OPENCV_LIBS})
 
 # Bundle properties
 if(${QT_VERSION} VERSION_LESS 6.1.0)

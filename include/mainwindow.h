@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "sprite.h"
+#include "sprite.hpp"
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE

@@ -8,20 +8,13 @@
 #include <QFileDialog>
 //from time import process_time
 #include "ImageData.hpp"
-#include "sprite.h"
+#include "sprite.hpp"
 #include "math.hpp"
 #include "stringcreator.hpp"
 #include "binarymask.hpp"
 
 // to fix: square spritesheet joiner, add outlines checkbox
 // maybe:: add operation system, each thing outputs an operation summary, show progress bar
-
-GroundCol::GroundCol(float r2, float g2, float b2, std::string customMaterial2, bool isSolid2) : isCustom(true), r(r2), g(g2), b(b2), customMaterial(customMaterial2), isSolid(isSolid2) {
-}
-GroundCol::GroundCol(float r2, float g2, float b2, SoundMaterial material2) : isCustom(false), r(r2), g(g2), b(b2), material(material2) {
-}
-GroundCol::GroundCol() : isCustom(false), r(0.f), g(0.f), b(0.f), material(SoundMaterial::rock) {
-}
 
 ColorGrade::ColorGrade(float rm, float gm, float bm, float re, float ge, float be, float s) : multiplyR(rm), multiplyG(gm), multiplyB(bm), exponentR(re), exponentG(ge), exponentB(be), saturation(s) {}
 ColorGrade::ColorGrade() : multiplyR(1.f), multiplyG(1.f), multiplyB(1.f), exponentR(1.f), exponentG(1.f), exponentB(1.f), saturation(1.f) {}
@@ -35,8 +28,6 @@ void ColorGrade::undoToColor(float& r, float& g, float& b) const {
     g = std::pow(r / multiplyG, 1.f / exponentG);
     b = std::pow(r / multiplyB, 1.f / exponentB);
 }
-
-Collider::Collider() : paths(), groundCol(), offset(0.f, 0.f) {}
 
 
 Sprite::Sprite(std::shared_ptr<IImageData> img) :

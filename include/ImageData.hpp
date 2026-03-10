@@ -36,6 +36,16 @@ public:
     void setToWhite(size_t x, size_t y) override;
     void setToZero(size_t x, size_t y) override;
 
+    inline void getNormalizedPixelBW  (size_t x, size_t y, float* gray) const override;
+    inline void getNormalizedPixelBWA (size_t x, size_t y, float* gray, float* alpha) const override;
+    inline void getNormalizedPixelRGB (size_t x, size_t y, float* red,  float* green, float* blue) const override;
+    inline void getNormalizedPixelRGBA(size_t x, size_t y, float* red,  float* green, float* blue, float* alpha) const override;
+
+    inline void setNormalizedPixelBW  (size_t x, size_t y, float gray) const override;
+    inline void setNormalizedPixelBWA (size_t x, size_t y, float gray, float alpha) const override;
+    inline void setNormalizedPixelRGB (size_t x, size_t y, float red,  float green, float blue) const override;
+    inline void setNormalizedPixelRGBA(size_t x, size_t y, float red,  float green, float blue, float alpha) const override;
+
     void bindTexture() const override;
     void loadTexture() override;
 

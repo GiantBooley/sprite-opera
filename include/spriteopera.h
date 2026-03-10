@@ -2,7 +2,7 @@
 #define SPRITEOPERA_H
 #include "mainwindow.h"
 #include <vector>
-#include <sprite.h>
+#include <sprite.hpp>
 
 class SpriteOpera
 {

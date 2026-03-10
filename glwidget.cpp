@@ -89,15 +89,19 @@ void GLWidget::initializeGL() {
         "}\n";
     QOpenGLShader* spriteFragmentShader = new QOpenGLShader(QOpenGLShader::Fragment, this);
     const char* spriteFragmentShaderSource =
-        "precision highp float;\n"
         "uniform sampler2D u_texture;\n"
+        "uniform sampler2D u_normalMap;\n"
         "uniform vec2 u_uvMin;\n"
         "uniform vec2 u_uvMax;\n"
         "varying vec2 v_texCoord;\n"
         "void main(void) {\n"
         "    vec2 uv = mix(u_uvMin, u_uvMax, v_texCoord);\n"
         "    uv.y = 1.0 - uv.y;\n"
-        "    gl_FragColor = texture2D(u_texture, uv);\n"
+        "    vec3 normal = texture2D(u_normalMap, uv).rgb;\n"
+        "    vec3 sun = normalize(vec3(-1., -1., 1.));\n"
+        "    vec4 color = texture2D(u_texture, uv);\n"
+        "    color.rgb *= dot(sun, normal);\n"
+        "    gl_FragColor = color;\n"
         "}\n";
 
     // compile
@@ -122,6 +126,7 @@ void GLWidget::initializeGL() {
 
     spriteShaderProgram->bind();
     spriteShaderProgram->setUniformValue("u_texture", 0);
+    spriteShaderProgram->setUniformValue("u_normalMap", 1);
 
     // set up vertex attributes
     int spriteVertexAttributeLocation = spriteShaderProgram->attributeLocation("a_vertex");
@@ -145,7 +150,6 @@ void GLWidget::initializeGL() {
         "}\n";
     QOpenGLShader* checkerFragmentShader = new QOpenGLShader(QOpenGLShader::Fragment, this);
     const char* checkerFragmentShaderSource =
-        "precision highp float;\n"
         "uniform vec3 color1;\n"
         "uniform vec3 color2;\n"
         "uniform int width;\n"
@@ -199,7 +203,6 @@ void GLWidget::initializeGL() {
         "}\n";
     QOpenGLShader* solidColorFragmentShader = new QOpenGLShader(QOpenGLShader::Fragment, this);
     const char* solidColorFragmentShaderSource =
-        "precision highp float;\n"
         "uniform vec4 u_color;\n"
         "void main(void) {\n"
         "    gl_FragColor = u_color;\n"

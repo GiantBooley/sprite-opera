@@ -29,6 +29,16 @@ public:
     virtual bool checkBounds(size_t x, size_t y) const = 0;
     virtual bool checkBounds(int x, int y) const = 0;
 
+    inline virtual void getNormalizedPixelBW  (size_t x, size_t y, float* gray) const = 0;
+    inline virtual void getNormalizedPixelBWA (size_t x, size_t y, float* gray, float* alpha) const = 0;
+    inline virtual void getNormalizedPixelRGB (size_t x, size_t y, float* red,  float* green, float* blue) const = 0;
+    inline virtual void getNormalizedPixelRGBA(size_t x, size_t y, float* red,  float* green, float* blue, float* alpha) const = 0;
+
+    inline virtual void setNormalizedPixelBW  (size_t x, size_t y, float gray) const = 0;
+    inline virtual void setNormalizedPixelBWA (size_t x, size_t y, float gray, float alpha) const = 0;
+    inline virtual void setNormalizedPixelRGB (size_t x, size_t y, float red,  float green, float blue) const = 0;
+    inline virtual void setNormalizedPixelRGBA(size_t x, size_t y, float red,  float green, float blue, float alpha) const = 0;
+
     virtual std::string getFilePath() const = 0;
 
     virtual std::shared_ptr<IImageData> convertTo(ImageType type) const = 0;
