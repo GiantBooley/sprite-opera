@@ -6,12 +6,12 @@
 #include <vector>
 #include <algorithm>
 #include <QFileDialog>
-//from time import process_time
 #include "ImageData.hpp"
 #include "sprite.hpp"
 #include "math.hpp"
 #include "stringcreator.hpp"
 #include "binarymask.hpp"
+#include "normalmapgenerator.hpp"
 
 // to fix: square spritesheet joiner, add outlines checkbox
 // maybe:: add operation system, each thing outputs an operation summary, show progress bar
@@ -35,7 +35,9 @@ Sprite::Sprite(std::shared_ptr<IImageData> img) :
     region(std::make_shared<BinaryRasterMask>(Vec2(0, 0), Vec2(static_cast<int>(img->getWidth()), static_cast<int>(img->getHeight())))) {}
 Sprite::Sprite(std::shared_ptr<IImageData> img, std::shared_ptr<AbstractBinaryMask> regio) :
     image(img),
-    region(regio) {}
+    region(regio) {
+    normalMap = std::make_shared<ImageData<float, 1.f>>(NormalMapGenerator::generate(img));
+}
 bool Sprite::sortSizeDescending(const Sprite& a, const Sprite& b) {
     return (a.region->getMax().x - a.region->getMin().x) * (a.region->getMax().y - a.region->getMin().y) > (b.region->getMax().x - b.region->getMin().x) * (b.region->getMax().y - b.region->getMin().y);
 }
@@ -50,7 +52,6 @@ std::shared_ptr<IImageData> Sprite::rasterizeTo(ImageType type) const {
         std::shared_ptr<ImageData<float, 1.f>> resultImage = std::dynamic_pointer_cast<ImageData<float, 1.f>>(result);
         std::fill(resultImage->data.begin(), resultImage->data.end(), 0);
 
-        std::shared_ptr<IImageData> convertedImage = image->convertTo(type);
         std::shared_ptr<ImageData<float, 1.f>> spriteImage = std::static_pointer_cast<ImageData<float, 1.f>>(image);
 
         for (int y = region->getMin().y; y < region->getMax().y; y++) {
@@ -63,7 +64,7 @@ std::shared_ptr<IImageData> Sprite::rasterizeTo(ImageType type) const {
                     resultImage->data[resultPixelIndex + 3] = 0.f;
                     continue;
                 }
-                size_t spritePixelIndex = (y * convertedImage->getWidth() + x) * convertedImage->getChannels();
+                size_t spritePixelIndex = (y * image->getWidth() + x) * image->getChannels();
 
                 float spriteAlpha = spriteImage->data[spritePixelIndex + 3];
                 resultImage->data[resultPixelIndex]     = spriteImage->data[spritePixelIndex    ];
@@ -79,7 +80,6 @@ std::shared_ptr<IImageData> Sprite::rasterizeTo(ImageType type) const {
         std::shared_ptr<ImageData<uint8_t, 255>> resultImage = std::dynamic_pointer_cast<ImageData<uint8_t, 255>>(result);
         std::fill(resultImage->data.begin(), resultImage->data.end(), 0);
 
-        std::shared_ptr<IImageData> convertedImage = image->convertTo(type);
         std::shared_ptr<ImageData<uint8_t, 255>> spriteImage = std::static_pointer_cast<ImageData<uint8_t, 255>>(image);
 
         for (int y = region->getMin().y; y < region->getMax().y; y++) {
@@ -92,7 +92,7 @@ std::shared_ptr<IImageData> Sprite::rasterizeTo(ImageType type) const {
                     resultImage->data[resultPixelIndex + 3] = 0;
                     continue;
                 }
-                size_t spritePixelIndex = (y * convertedImage->getWidth() + x) * convertedImage->getChannels();
+                size_t spritePixelIndex = (y * image->getWidth() + x) * image->getChannels();
 
                 uint8_t spriteAlpha = spriteImage->data[spritePixelIndex + 3];
                 resultImage->data[resultPixelIndex]     = spriteImage->data[spritePixelIndex    ];
@@ -169,7 +169,7 @@ void VirtualSpritesheet::separate(std::shared_ptr<IImageData> spritesheet) {
     std::cout << "separating spritesheet size: " << spritesheet->getWidth() << "x" << spritesheet->getHeight() << std::endl;
     // ===== settings ======
     const double alphaThreshold = 0.0; // pixels with alpha above this number will be kept (0-1), 0=keep everything above 0, 1=delete everything
-    const size_t minArea = 25; // minimum number of pixels for island to be valid
+    const size_t minArea = 5 * 5; // minimum number of pixels for island to be valid
 
     // ===== summary variables
     size_t skippedIslands = 0;

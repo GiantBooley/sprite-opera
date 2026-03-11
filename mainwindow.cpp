@@ -72,6 +72,7 @@ void MainWindow::on_actionMenubarOpenImageFolder_triggered() { // Open>Folder of
     std::vector<Rect> freeRects;
     std::vector<Sprite> sprites;
     const double alphaThreshold = 0.1;
+    int i = 0;
     for (std::shared_ptr<IImageData>& data : imageDatas) {
         // create region
         std::shared_ptr<BinaryRasterMask> region = std::make_shared<BinaryRasterMask>(Vec2(0, 0), Vec2(data->getWidth(), data->getHeight()));
@@ -80,6 +81,7 @@ void MainWindow::on_actionMenubarOpenImageFolder_triggered() { // Open>Folder of
                 region->set(x, y, data->sampleNormalAlpha(x, y) > alphaThreshold);
             }
         }
+        std::cout << "Adding " << (++i) << "/" << imageDatas.size() << std::endl;
         sprites.push_back({data, region});
     }
     std::shared_ptr<VirtualSpritesheet> spritesheet = std::make_shared<VirtualSpritesheet>();
@@ -95,6 +97,7 @@ void MainWindow::addVirtualSpritesheet(std::shared_ptr<VirtualSpritesheet> sprit
     for (size_t i = 0; i < spritesheet->sprites.size(); i++) {
         // load opengl texture
         spritesheet->sprites[i].sprite.image->loadTexture();
+        spritesheet->sprites[i].sprite.normalMap->loadTexture();
     }
     SpriteOpera::inst().spritesheets.push_back(spritesheet);
     SpriteOpera::inst().currentSpritesheetIndex = SpriteOpera::inst().spritesheets.size() - 1;

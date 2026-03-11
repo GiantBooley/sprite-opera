@@ -3,6 +3,7 @@
 
 #include <variant>
 #include <cstdint>
+#include <vector>
 
 // math functions
 int clamp(int a, int b, int c);
@@ -22,6 +23,25 @@ struct Vec2f {
     Vec2f operator-(const Vec2f& other);
     Vec2f operator+(const float& other);
     Vec2f operator*(const float& other);
+    Vec2f operator/(const float& other);
+};
+struct Vec3f {
+    float x, y, z;
+    void operator+=(const Vec3f& other);
+    Vec3f operator-(const Vec3f& other);
+    Vec3f operator+(const float& other);
+    Vec3f operator*(const float& other);
+    Vec3f operator/(const float& other);
+
+    void normalize();
+};
+class NearestNeighbor {
+public:
+    int gridWidth, gridHeight;
+    float minX, maxX, minY, maxY;
+    std::vector<std::vector<Vec2f>> cells;
+    NearestNeighbor(int width, int height, std::vector<Vec2f>& points);
+    Vec2f getNearestNeighbor(Vec2f point) const;
 };
 class Vec2iref {
 public:

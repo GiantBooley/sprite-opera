@@ -89,6 +89,9 @@ void GLWidget::initializeGL() {
         "}\n";
     QOpenGLShader* spriteFragmentShader = new QOpenGLShader(QOpenGLShader::Fragment, this);
     const char* spriteFragmentShaderSource =
+        "#ifdef GL_ES\n"
+        "precision mediump float;\n"
+        "#endif\n"
         "uniform sampler2D u_texture;\n"
         "uniform sampler2D u_normalMap;\n"
         "uniform vec2 u_uvMin;\n"
@@ -98,9 +101,12 @@ void GLWidget::initializeGL() {
         "    vec2 uv = mix(u_uvMin, u_uvMax, v_texCoord);\n"
         "    uv.y = 1.0 - uv.y;\n"
         "    vec3 normal = texture2D(u_normalMap, uv).rgb;\n"
-        "    vec3 sun = normalize(vec3(-1., -1., 1.));\n"
+        "    normal = normalize(normal * 2.0 - 1.0);\n"
+        "    vec3 sun = normalize(vec3(-1., 1., -1.));\n"
         "    vec4 color = texture2D(u_texture, uv);\n"
-        "    color.rgb *= dot(sun, normal);\n"
+        "    float diffuse = dot(-sun, normal);\n"
+        "    vec3 ambient = vec3(0.15, 0.15, 0.15);\n"
+        "    color.rgb *= vec3(diffuse) + ambient;\n"
         "    gl_FragColor = color;\n"
         "}\n";
 
@@ -150,6 +156,9 @@ void GLWidget::initializeGL() {
         "}\n";
     QOpenGLShader* checkerFragmentShader = new QOpenGLShader(QOpenGLShader::Fragment, this);
     const char* checkerFragmentShaderSource =
+        "#ifdef GL_ES\n"
+        "precision mediump float;\n"
+        "#endif\n"
         "uniform vec3 color1;\n"
         "uniform vec3 color2;\n"
         "uniform int width;\n"
@@ -203,6 +212,9 @@ void GLWidget::initializeGL() {
         "}\n";
     QOpenGLShader* solidColorFragmentShader = new QOpenGLShader(QOpenGLShader::Fragment, this);
     const char* solidColorFragmentShaderSource =
+        "#ifdef GL_ES\n"
+        "precision mediump float;\n"
+        "#endif\n"
         "uniform vec4 u_color;\n"
         "void main(void) {\n"
         "    gl_FragColor = u_color;\n"
@@ -400,7 +412,10 @@ void GLWidget::paintGL() {
                 spriteShaderProgram->setUniformValue("u_uvMin", QVector2D(static_cast<float>(sprite.sprite.region->getMin().x) / imageWidth, static_cast<float>(sprite.sprite.region->getMin().y) / imageHeight));
                 spriteShaderProgram->setUniformValue("u_uvMax", QVector2D(static_cast<float>(sprite.sprite.region->getMax().x) / imageWidth, static_cast<float>(sprite.sprite.region->getMax().y) / imageHeight));
 
+                glActiveTexture(GL_TEXTURE0);
                 sprite.sprite.image->bindTexture();
+                glActiveTexture(GL_TEXTURE1);
+                sprite.sprite.normalMap->bindTexture();
 
                 texturedQuadVAO.bind();
                 glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);

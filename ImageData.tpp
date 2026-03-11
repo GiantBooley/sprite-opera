@@ -187,8 +187,8 @@ inline void ImageData<T, whiteValue>::getNormalizedPixelBW(size_t x, size_t y, f
     constexpr float m = 1.f / static_cast<float>(whiteValue);
     size_t pixel = (y * width + x) * colch;
     switch (colch) {
-        case 1: case 2: *gray = static_cast<float>(data[pixel]) * m; break;// get first value of pixel
-        case 3: case 4: *gray = m * (static_cast<float>(data[pixel]) * 0.299f + static_cast<float>(data[pixel + 1]) * 0.587f + static_cast<float>(data[pixel + 2]) * 0.114f);
+        case 1: case 2: *gray = static_cast<float>(data[pixel]) * m; break; // BW or BWA: get first color
+        case 3: case 4: *gray = m * (static_cast<float>(data[pixel]) * 0.299f + static_cast<float>(data[pixel + 1]) * 0.587f + static_cast<float>(data[pixel + 2]) * 0.114f); // RGB or RGBA: get gray
     }
 }
 template<typename T, T whiteValue>
@@ -196,13 +196,13 @@ inline void ImageData<T, whiteValue>::getNormalizedPixelBWA (size_t x, size_t y,
     constexpr float m = 1.f / static_cast<float>(whiteValue);
     size_t pixel = (y * width + x) * colch;
     switch (colch) {
-        case 1: case 2: *gray = static_cast<float>(data[pixel]) * m; break;// get first value of pixel
-        case 3: case 4: *gray = m * (static_cast<float>(data[pixel]) * 0.299f + static_cast<float>(data[pixel + 1]) * 0.587f + static_cast<float>(data[pixel + 2]) * 0.114f);
+        case 1: case 2: *gray = static_cast<float>(data[pixel]) * m; break; // BW or BWA: get first color
+        case 3: case 4: *gray = m * (static_cast<float>(data[pixel]) * 0.299f + static_cast<float>(data[pixel + 1]) * 0.587f + static_cast<float>(data[pixel + 2]) * 0.114f); // RGB or RGBA: get gray
     }
     switch (colch) {
-        case 1: case 3: *alpha = 1.f; break;
-        case 2: *alpha = static_cast<float>(data[pixel + 1]) * m; break;
-        case 4: *alpha = static_cast<float>(data[pixel + 3]) * m;
+        case 1: case 3: *alpha = 1.f; break; // BW or RGB: get full alpha
+        case 2: *alpha = static_cast<float>(data[pixel + 1]) * m; break; // BWA: get alpha
+        case 4: *alpha = static_cast<float>(data[pixel + 3]) * m; // RGBA: get alpha
     }
 }
 template<typename T, T whiteValue>
@@ -211,8 +211,8 @@ inline void ImageData<T, whiteValue>::getNormalizedPixelRGB (size_t x, size_t y,
     size_t pixel = (y * width + x) * colch;
     float gray;
     switch (colch) {
-        case 1: case 2: gray = static_cast<float>(data[pixel]) * m; *red = gray; *green = gray; *blue = gray; break;
-        case 3: case 4: *red = static_cast<float>(data[pixel]) * m; *green = static_cast<float>(data[pixel + 1]) * m; *blue = static_cast<float>(data[pixel + 2]) * m;
+        case 1: case 2: gray = static_cast<float>(data[pixel]) * m; *red = gray; *green = gray; *blue = gray; break; // BW or BWA: get first color for all 3
+        case 3: case 4: *red = static_cast<float>(data[pixel]) * m; *green = static_cast<float>(data[pixel + 1]) * m; *blue = static_cast<float>(data[pixel + 2]) * m; // RGB or RGBA: get rgb
     }
 }
 template<typename T, T whiteValue>
@@ -221,20 +221,85 @@ inline void ImageData<T, whiteValue>::getNormalizedPixelRGBA(size_t x, size_t y,
     size_t pixel = (y * width + x) * colch;
     float gray;
     switch (colch) {
-        case 1: case 2: gray = static_cast<float>(data[pixel]) * m; *red = gray; *green = gray; *blue = gray; break;
-        case 3: case 4: *red = static_cast<float>(data[pixel]) * m; *green = static_cast<float>(data[pixel + 1]) * m; *blue = static_cast<float>(data[pixel + 2]) * m;
+        case 1: case 2: gray = static_cast<float>(data[pixel]) * m; *red = gray; *green = gray; *blue = gray; break; // BW or BWA: get first color for all 3
+        case 3: case 4: *red = static_cast<float>(data[pixel]) * m; *green = static_cast<float>(data[pixel + 1]) * m; *blue = static_cast<float>(data[pixel + 2]) * m; // RGB or RGBA: get rgb
     }
     switch (colch) {
-        case 1: case 3: *alpha = 1.f; break;
-        case 2: *alpha = static_cast<float>(data[pixel + 1]) * m; break;
-        case 4: *alpha = static_cast<float>(data[pixel + 3]) * m;
+        case 1: case 3: *alpha = 1.f; break; // BW or RGB: get full alpha
+        case 2: *alpha = static_cast<float>(data[pixel + 1]) * m; break; // BWA: get alpha
+        case 4: *alpha = static_cast<float>(data[pixel + 3]) * m; // RGBA: get alpha
+    }
+}
+template<typename T, T whiteValue>
+inline void ImageData<T, whiteValue>::getNormalizedPixelA(size_t x, size_t y, float* alpha) const {
+    constexpr float m = 1.f / static_cast<float>(whiteValue);
+    size_t pixel = (y * width + x) * colch;
+    switch (colch) {
+        case 1: case 3: *alpha = 1.f; break; // BW or RGB: get full alpha
+        case 2: *alpha = static_cast<float>(data[pixel + 1]) * m; break; // BWA: get alpha
+        case 4: *alpha = static_cast<float>(data[pixel + 3]) * m; // RGBA: get alpha
     }
 }
 
-inline void setNormalizedPixelBW  (size_t x, size_t y, float gray) const override;
-inline void setNormalizedPixelBWA (size_t x, size_t y, float gray, float alpha) const override;
-inline void setNormalizedPixelRGB (size_t x, size_t y, float red,  float green, float blue) const override;
-inline void setNormalizedPixelRGBA(size_t x, size_t y, float red,  float green, float blue, float alpha) const override;
+template<typename T, T whiteValue>
+inline void ImageData<T, whiteValue>::setNormalizedPixelBW  (size_t x, size_t y, float gray) {
+    constexpr float m = static_cast<float>(whiteValue);
+    size_t pixel = (y * width + x) * colch;
+    T grayCast = static_cast<T>(gray * m);
+    switch (colch) {
+        case 1: data[pixel] = grayCast; break; // BW: set to gray
+        case 2: data[pixel] = grayCast; data[pixel + 1] = whiteValue; break; // BWA: set to gray with full alpha
+
+        case 3: data[pixel] = grayCast; data[pixel + 1] = grayCast; data[pixel + 2] = grayCast; break; // RGB: set to gray
+        case 4: data[pixel] = grayCast; data[pixel + 1] = grayCast; data[pixel + 2] = grayCast; data[pixel + 3] = whiteValue; // RGBA: set to gray with full alpha
+    }
+}
+template<typename T, T whiteValue>
+inline void ImageData<T, whiteValue>::setNormalizedPixelBWA (size_t x, size_t y, float gray, float alpha) {
+    constexpr float m = static_cast<float>(whiteValue);
+    size_t pixel = (y * width + x) * colch;
+    T grayCast = static_cast<T>(gray * m);
+    switch (colch) {
+        case 1: data[pixel] = grayCast; break; // BW: set to gray
+        case 2: data[pixel] = grayCast; data[pixel + 1] = static_cast<T>(alpha * m); break; // BWA: set to gray with alpha
+
+        case 3: data[pixel] = grayCast; data[pixel + 1] = grayCast; data[pixel + 2] = grayCast; break; // RGB: set to gray
+        case 4: data[pixel] = grayCast; data[pixel + 1] = grayCast; data[pixel + 2] = grayCast; data[pixel + 3] = static_cast<T>(alpha * m); // RGBA: set to gray with alpha
+    }
+}
+template<typename T, T whiteValue>
+inline void ImageData<T, whiteValue>::setNormalizedPixelRGB (size_t x, size_t y, float red,  float green, float blue) {
+    constexpr float m = static_cast<float>(whiteValue);
+    size_t pixel = (y * width + x) * colch;
+    switch (colch) {
+        case 1: data[pixel] = static_cast<T>(m * (red * 0.299f + green * 0.587f + blue * 0.114f)); break; // BW: set to gray
+        case 2: data[pixel] = static_cast<T>(m * (red * 0.299f + green * 0.587f + blue * 0.114f)); data[pixel + 1] = whiteValue; break; // BWA: set to gray with full alpha
+
+        case 3: data[pixel] = static_cast<T>(red * m); data[pixel + 1] = static_cast<T>(green * m); data[pixel + 2] = static_cast<T>(blue * m); break; // RGB: set to rgb
+        case 4: data[pixel] = static_cast<T>(red * m); data[pixel + 1] = static_cast<T>(green * m); data[pixel + 2] = static_cast<T>(blue * m); data[pixel + 3] = whiteValue; // RGBA: set to rgb with full alpha
+    }
+}
+template<typename T, T whiteValue>
+inline void ImageData<T, whiteValue>::setNormalizedPixelRGBA(size_t x, size_t y, float red,  float green, float blue, float alpha) {
+    constexpr float m = static_cast<float>(whiteValue);
+    size_t pixel = (y * width + x) * colch;
+    switch (colch) {
+        case 1: data[pixel] = static_cast<T>(m * (red * 0.299f + green * 0.587f + blue * 0.114f)); break; // BW: set to gray
+        case 2: data[pixel] = static_cast<T>(m * (red * 0.299f + green * 0.587f + blue * 0.114f)); data[pixel + 1] = static_cast<T>(alpha * m); break; // BWA: set to gray with alpha
+
+        case 3: data[pixel] = static_cast<T>(red * m); data[pixel + 1] = static_cast<T>(green * m); data[pixel + 2] = static_cast<T>(blue * m); break; // RGB: set to rgb
+        case 4: data[pixel] = static_cast<T>(red * m); data[pixel + 1] = static_cast<T>(green * m); data[pixel + 2] = static_cast<T>(blue * m); data[pixel + 3] = static_cast<T>(alpha * m); // RGBA: set to rgb with alpha
+    }
+}
+template<typename T, T whiteValue>
+inline void ImageData<T, whiteValue>::setNormalizedPixelA(size_t x, size_t y, float alpha) {
+    constexpr float m = static_cast<float>(whiteValue);
+    size_t pixel = (y * width + x) * colch;
+    switch (colch) {
+        case 2: data[pixel] = data[pixel + 1] = static_cast<T>(alpha * m); break; // BWA: set with alpha
+        case 4: data[pixel] = data[pixel + 3] = static_cast<T>(alpha * m); // RGBA: set with alpha
+    }
+}
 
 template <typename T, T whiteValue>
 template <typename newType, newType newWhiteValue>

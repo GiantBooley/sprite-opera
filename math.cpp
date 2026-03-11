@@ -37,6 +37,94 @@ Vec2f Vec2f::operator+(const float& other) {
 Vec2f Vec2f::operator*(const float& other) {
     return {x * other, y * other};
 }
+Vec2f Vec2f::operator/(const float& other) {
+    return {x / other, y / other};
+}
+
+void Vec3f::operator+=(const Vec3f& other) {
+    x += other.x;
+    y += other.y;
+    z += other.z;
+}
+Vec3f Vec3f::operator-(const Vec3f& other) {
+    return {x - other.x, y - other.y, z - other.z};
+}
+Vec3f Vec3f::operator+(const float& other) {
+    return {x + other, y + other, z * other};
+}
+Vec3f Vec3f::operator*(const float& other) {
+    return {x * other, y * other, z * other};
+}
+Vec3f Vec3f::operator/(const float& other) {
+    return {x / other, y / other, z * other};
+}
+void Vec3f::normalize() {
+    float invMagnitude = 1.f / std::sqrt(x * x + y * y + z * z);
+    x *= invMagnitude;
+    y *= invMagnitude;
+    z *= invMagnitude;
+}
+
+NearestNeighbor::NearestNeighbor(int width, int height, std::vector<Vec2f>& points) : gridWidth(width), gridHeight(height) {
+    minX = 0.f;
+    maxX = 0.f;
+    minY = 0.f;
+    maxY = 0.f;
+    bool first = true;
+    for (Vec2f point : points) {
+        if (first || point.x < minX) minX = point.x;
+        if (first || point.y < minY) minY = point.y;
+        if (first || point.x > minX) maxX = point.x;
+        if (first || point.y > minY) maxY = point.y;
+        first = false;
+    }
+
+    cells.resize(gridWidth * gridHeight);
+    for (Vec2f point : points) {
+        int cellX = clamp(static_cast<int>(inverseLerp(point.x, minX, maxX) * static_cast<float>(gridWidth)), 0, gridWidth - 1);
+        int cellY = clamp(static_cast<int>(inverseLerp(point.y, minY, maxY) * static_cast<float>(gridHeight)), 0, gridHeight - 1);
+        cells[cellY * gridWidth + cellX].push_back(point);
+    }
+}
+Vec2f NearestNeighbor::getNearestNeighbor(Vec2f point) const {
+    int cellX = clamp(static_cast<int>(inverseLerp(point.x, minX, maxX) * static_cast<float>(gridWidth)), 0, gridWidth - 1);
+    int cellY = clamp(static_cast<int>(inverseLerp(point.y, minY, maxY) * static_cast<float>(gridHeight)), 0, gridHeight - 1);
+
+
+    int checkWidth = 1;
+
+    // loop over ring
+    bool foundNothing = false;
+    while (!foundNothing) { // 1 ring
+        size_t n = checkWidth == 1 ? 1 : 4 * (checkWidth - 1); // number of points in ring
+        int halfWidth = checkWidth / 2;
+        Vec2 check{-halfWidth, -halfWidth}; // 5: 2, 3: 1, 1: 0
+        for (size_t i = 0; i < n; i++) {
+            bool found = false;
+            int cellIndex = check.y * gridWidth + check.x;
+
+            // check current cell
+            bool first = true;
+            Vec2f closestPoint;
+            float closestSquareDistance;
+            for (Vec2f cellPoint : cells[cellIndex]) {
+                float squareDistance = (point.x - cellPoint.x) * (point.x - cellPoint.x) + (point.y - cellPoint.y) * (point.y - cellPoint.y);
+                if (first || squareDistance < closestSquareDistance) {
+                    closestSquareDistance = squareDistance;
+                    first = false;
+                }
+            }
+
+            // move clockwise
+            if      (check.x == -halfWidth && check.y !=  halfWidth) check.y += 1; // left   side: move up
+            else if (check.y ==  halfWidth && check.x !=  halfWidth) check.x += 1; // top    side: move right
+            else if (check.x ==  halfWidth && check.y != -halfWidth) check.y -= 1; // right  side: move down
+            else if (check.y == -halfWidth && check.x != -halfWidth) check.x -= 1; // bottom side: move left
+        }
+        checkWidth += 2;
+    }
+}
+
 
 int Vec2iref::x() const {return getValue(xValue);}
 int Vec2iref::y() const {return getValue(yValue);}
